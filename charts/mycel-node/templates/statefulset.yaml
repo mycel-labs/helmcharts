@@ -111,6 +111,8 @@ spec:
             name: rosetta
           - containerPort: 9090
             name: grpc
+          - containerPort: 26656
+            name: p2p
           - containerPort: 26657
             name: rpc
           - containerPort: 9091

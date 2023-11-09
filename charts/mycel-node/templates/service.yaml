@@ -32,6 +32,9 @@ spec:
   - name: grpc
     port: 9090
     protocol: TCP
+  - name: p2p
+    port: 26656
+    protocol: TCP
   - name: rpc
     port: 26657
     protocol: TCP
