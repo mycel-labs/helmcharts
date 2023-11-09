@@ -21,16 +21,8 @@ spec:
         - name: data
           mountPath: /opt/data
         ports:
-          - containerPort: 1317
-            name: api
-          - containerPort: 8080
-            name: rosetta
-          - containerPort: 9090
-            name: grpc
-          - containerPort: 26657
-            name: rpc
-          - containerPort: 9091
-            name: grpc-web
+          - containerPort: 26656
+            name: p2p
         command:
           - sh
           - -c
