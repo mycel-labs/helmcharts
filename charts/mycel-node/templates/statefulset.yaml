@@ -44,7 +44,7 @@ spec:
           mountPath: /opt/data
         resources:
           limits:
-            cpu: 1000m
+            cpu: 500m
             ephemeral-storage: 10Gi
             memory: 2Gi
           requests:
@@ -79,7 +79,7 @@ spec:
     matchLabels:
       app: mycel-node
   serviceName: "mycel-node"
-  replicas: 1
+  replicas: {{ .Values.node.replicas }}
   template:
     metadata:
       labels:
@@ -118,7 +118,7 @@ spec:
           mountPath: /opt/genesis
         resources:
           limits:
-            cpu: 1000m
+            cpu: 500m
             ephemeral-storage: 10Gi
             memory: 2Gi
           requests:

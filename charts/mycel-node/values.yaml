@@ -12,6 +12,7 @@ seed:
 
 node:
   volumeSize: 256Gi
+  replicas: 0
 
 ingress:
   enable: true
