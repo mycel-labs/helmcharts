@@ -21,5 +21,36 @@ spec:
   - name: grpc-web
     port: 9091
     protocol: TCP
+  - name: genesis-provider
+    port: 3000
+    protocol: TCP
+
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mycel-node
+spec:
+  selector:
+    app: mycel-node
+  ports:
+  - name: api
+    port: 1317
+    protocol: TCP
+  - name: rosetta
+    port: 8080
+    protocol: TCP
+  - name: grpc
+    port: 9090
+    protocol: TCP
+  - name: rpc
+    port: 26657
+    protocol: TCP
+  - name: grpc-web
+    port: 9091
+    protocol: TCP
+
   type: LoadBalancer
 

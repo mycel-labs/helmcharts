@@ -18,7 +18,7 @@ spec:
       - name: mycel
         image: {{ .Values.common.image }}
         volumeMounts:
-        - name: seed-volume
+        - name: data
           mountPath: /opt/data
         ports:
           - containerPort: 1317
@@ -36,6 +36,20 @@ spec:
           - -c
           - |
             {{ .Values.common.binaryName }} start --home /opt/data/mycel
+
+      - name: genesis-provider
+        image: busybox
+        volumeMounts:
+        - name: data
+          mountPath: /opt/data
+        ports:
+          - containerPort: 3000
+        command:
+          - sh
+          - -c
+          - |
+            httpd -f -p 3000 -h /opt/data/mycel/config
+
       initContainers:
       - name: init-seed
         image: golang
@@ -63,10 +77,16 @@ spec:
             cd work
             git clone {{ .Values.seed.repositoryURL }} .
             ignite chain init --home /opt/data/mycel
-      volumes:
-        - name: seed-volume
-          persistentVolumeClaim:
-            claimName: seed-volume
+
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.seed.volumeSize }}
+
 
 ---
 
@@ -108,14 +128,13 @@ spec:
           - -c
           - |
             myceld start --home /opt/data/mycel
+
       initContainers:
       - name: init-node
         image: {{ .Values.common.image }}
         volumeMounts:
         - name: data
           mountPath: /opt/data
-        - name: seed-volume
-          mountPath: /opt/genesis
         resources:
           limits:
             cpu: 500m
@@ -134,13 +153,11 @@ spec:
             fi
             apt install -y jq
             myceld init node --home /opt/data/mycel
-            cp /opt/genesis/mycel/config/genesis.json /opt/data/mycel/config/genesis.json
+
+            curl mycel-seed:3000/genesis.json > /opt/data/mycel/config/genesis.json
+
             SEED_NODE_ID=$(curl http://mycel-seed:26657/status | jq -r '.result.node_info.id')
             sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@mycel-seed:26656\"/g" /opt/data/mycel/config/config.toml
-      volumes:
-        - name: seed-volume
-          persistentVolumeClaim:
-            claimName: seed-volume
 
   volumeClaimTemplates:
   - metadata:

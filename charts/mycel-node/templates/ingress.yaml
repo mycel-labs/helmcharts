@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: mycel-seed
+  name: mycel-node
 spec:
   rules:
     # lcd
@@ -10,7 +10,7 @@ spec:
         paths:
           - backend:
               service:
-                name: mycel-seed
+                name: mycel-node
                 port:
                   number: 1317
             path: /
@@ -22,7 +22,7 @@ spec:
         paths:
           - backend:
               service:
-                name: mycel-seed
+                name: mycel-node
                 port:
                   number: 26657
             path: /
@@ -31,5 +31,5 @@ spec:
     - hosts:
         - {{ .Values.ingress.lcd_endpoint }}
         - {{ .Values.ingress.rpc_endpoint }}
-      secretName: mycel-seed-ingress-cert
+      secretName: mycel-node-ingress-cert
 
