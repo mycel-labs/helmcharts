@@ -16,9 +16,9 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: mycel
-        image: {{ .Values.seed.image }}
+        image: {{ .Values.common.image }}
         volumeMounts:
-        - name: data
+        - name: seed-volume
           mountPath: /opt/data
         ports:
           - containerPort: 1317
@@ -35,12 +35,12 @@ spec:
           - sh
           - -c
           - |
-            {{ .Values.seed.binaryName }} start --home /opt/data/mycel
+            {{ .Values.common.binaryName }} start --home /opt/data/mycel
       initContainers:
       - name: init-seed
         image: golang
         volumeMounts:
-        - name: data
+        - name: seed-volume
           mountPath: /opt/data
         resources:
           limits:
@@ -63,6 +63,84 @@ spec:
             cd work
             git clone {{ .Values.seed.repositoryURL }} .
             ignite chain init --home /opt/data/mycel
+      volumes:
+        - name: seed-volume
+          persistentVolumeClaim:
+            claimName: seed-volume
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mycel-node
+spec:
+  selector:
+    matchLabels:
+      app: mycel-node
+  serviceName: "mycel-node"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mycel-node
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mycel
+        image: {{ .Values.common.image }}
+        volumeMounts:
+        - name: data
+          mountPath: /opt/data
+        ports:
+          - containerPort: 1317
+            name: api
+          - containerPort: 8080
+            name: rosetta
+          - containerPort: 9090
+            name: grpc
+          - containerPort: 26657
+            name: rpc
+          - containerPort: 9091
+            name: grpc-web
+        command:
+          - sh
+          - -c
+          - |
+            myceld start --home /opt/data/mycel
+      initContainers:
+      - name: init-node
+        image: {{ .Values.common.image }}
+        volumeMounts:
+        - name: data
+          mountPath: /opt/data
+        - name: seed-volume
+          mountPath: /opt/genesis
+        resources:
+          limits:
+            cpu: 1000m
+            ephemeral-storage: 10Gi
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            ephemeral-storage: 10Gi
+            memory: 2Gi
+        command:
+          - bash
+          - -cx
+          - |
+            if [ -d /opt/data/mycel ]; then
+              exit 0;
+            fi
+            apt install -y jq
+            myceld init node --home /opt/data/mycel
+            cp /opt/genesis/mycel/config/genesis.json /opt/data/mycel/config/genesis.json
+            SEED_NODE_ID=$(curl http://mycel-seed:26657/status | jq -r '.result.node_info.id')
+            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@mycel-seed:26656\"/g" /opt/data/mycel/config/config.toml
+      volumes:
+        - name: seed-volume
+          persistentVolumeClaim:
+            claimName: seed-volume
 
   volumeClaimTemplates:
   - metadata:
@@ -71,5 +149,5 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: {{ .Values.seed.volumeSize }}
+          storage: {{ .Values.node.volumeSize }}
 
