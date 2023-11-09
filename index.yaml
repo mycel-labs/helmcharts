@@ -1,0 +1,13 @@
+apiVersion: v1
+entries:
+  mycel-node:
+  - apiVersion: v2
+    appVersion: "0.1"
+    created: "2023-11-09T09:01:27.203243436Z"
+    description: A Helm chart for mycel-node
+    digest: b3db541a93b6086b82a95463740e14e93804008310c9760d585d24b1c7980dd8
+    name: mycel-node
+    urls:
+    - https://github.com/mycel-domain/helmcharts/releases/download/mycel-node-0.0.2/mycel-node-0.0.2.tgz
+    version: 0.0.2
+generated: "2023-11-09T09:01:27.203252854Z"
