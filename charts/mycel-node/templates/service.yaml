@@ -9,6 +9,9 @@ spec:
   - name: p2p
     port: 26656
     protocol: TCP
+  - name: rpc
+    port: 26657
+    protocol: TCP
   - name: genesis-provider
     port: 3000
     protocol: TCP
