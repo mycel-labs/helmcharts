@@ -54,7 +54,7 @@ spec:
       - name: init-seed
         image: golang
         volumeMounts:
-        - name: seed-volume
+        - name: data
           mountPath: /opt/data
         resources:
           limits:
