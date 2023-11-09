@@ -6,6 +6,7 @@ seed:
   image: ghcr.io/mycel-domain/mycel:main
   repositoryURL: https://github.com/mycel-domain/mycel.git
   binaryName: myceld
+  volumeSize: 256Gi
 
 ingress:
   enable: true
