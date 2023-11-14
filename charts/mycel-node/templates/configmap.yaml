@@ -5,7 +5,7 @@ metadata:
 data:
   genesis.json: {{ .Values.common.genesis | quote }}
   node_key.json: {{ .Values.seed.node_key | quote }}
-  priv_validator_keys.json: {{ .Values.seed.priv_key | quote }}
+  priv_validator_key.json: {{ .Values.seed.priv_key | quote }}
 
 ---
 apiVersion: v1

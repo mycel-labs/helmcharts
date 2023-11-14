@@ -34,7 +34,8 @@ spec:
           - -c
           - |
             if [ ! -d /opt/data/mycel ]; then
-              mkdir -p /opt/data/mycel
+              mkdir -p /opt/data/mycel/config
+              mkdir -p /opt/data/mycel/data
               cp /opt/seed/config/* /opt/data/mycel/config
               cp /opt/seed/data/* /opt/data/mycel/data
             fi
