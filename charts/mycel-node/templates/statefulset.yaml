@@ -124,13 +124,14 @@ spec:
             if [ -d /opt/data/mycel ]; then
               exit 0;
             fi
-            apt install -y jq
+            apt install -y jq dig
             myceld init node --home /opt/data/mycel
 
             cat /opt/seed/config/genesis.json > /opt/data/mycel/config/genesis.json
 
+            SEED_ADDR=$(getent hosts mycel-seed | awk '{ print $1 }')
             SEED_NODE_ID=$(curl http://mycel-seed:26657/status | jq -r '.result.node_info.id')
-            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@mycel-seed:26656\"/g" /opt/data/mycel/config/config.toml
+            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@${SEED_ADDR}:26656\"/g" /opt/data/mycel/config/config.toml
 
       volumes:
         - name: seed-config
