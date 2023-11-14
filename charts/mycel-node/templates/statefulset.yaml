@@ -124,7 +124,7 @@ spec:
             if [ -d /opt/data/mycel ]; then
               exit 0;
             fi
-            apt install -y jq dig
+            apt install -y jq
             myceld init node --home /opt/data/mycel
 
             cat /opt/seed/config/genesis.json > /opt/data/mycel/config/genesis.json
