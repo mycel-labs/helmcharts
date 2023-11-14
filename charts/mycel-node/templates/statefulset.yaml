@@ -129,8 +129,8 @@ spec:
 
             cat /opt/seed/config/genesis.json > /opt/data/mycel/config/genesis.json
 
-            SEED_NODE=$(cat /opt/data/mycel/config/genesis.json | jq -r '.app_state.genutil.gen_txs[0].body.memo')
-            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE}\"/g" /opt/data/mycel/config/config.toml
+            SEED_NODE_ID=$(curl http://mycel-seed:26657/status | jq -r '.result.node_info.id')
+            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@mycel-seed:26656\"/g" /opt/data/mycel/config/config.toml
 
       volumes:
         - name: seed-config
