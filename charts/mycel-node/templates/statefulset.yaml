@@ -20,6 +20,10 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /opt/data
+        - name: seed-config
+          mountPath: /opt/seed/config
+        - name: seed-data
+          mountPath: /opt/seed/data
         ports:
           - containerPort: 26656
             name: p2p
@@ -29,48 +33,18 @@ spec:
           - sh
           - -c
           - |
-            {{ .Values.common.binaryName }} start --home /opt/data/mycel
-
-      - name: genesis-provider
-        image: busybox
-        volumeMounts:
-        - name: data
-          mountPath: /opt/data
-        ports:
-          - containerPort: 3000
-        command:
-          - sh
-          - -c
-          - |
-            httpd -f -p 3000 -h /opt/data/mycel/config
-
-      initContainers:
-      - name: init-seed
-        image: golang
-        volumeMounts:
-        - name: data
-          mountPath: /opt/data
-        resources:
-          limits:
-            cpu: 500m
-            ephemeral-storage: 10Gi
-            memory: 2Gi
-          requests:
-            cpu: 500m
-            ephemeral-storage: 10Gi
-            memory: 2Gi
-        command:
-          - bash
-          - -cx
-          - |
-            if [ -d /opt/data/mycel ]; then
-              exit 0;
+            if [ ! -d /opt/data/mycel ]; then
+              cp /opt/seed/config/* /opt/data/mycel/config
+              cp /opt/seed/data/* /opt/data/mycel/data
             fi
-            curl 'https://get.ignite.com/cli@'{{ .Values.ignite.version }}! | bash
-            mkdir work
-            cd work
-            git clone {{ .Values.seed.repositoryURL }} .
-            ignite chain init --home /opt/data/mycel
+            {{ .Values.common.binaryName }} start --home /opt/data/mycel
+      volumes:
+        - name: seed-config
+          configMap:
+            name: seed-config
+        - name: seed-data
+          configMap:
+            name: seed-config
 
   volumeClaimTemplates:
   - metadata:
@@ -80,7 +54,6 @@ spec:
       resources:
         requests:
           storage: {{ .Values.seed.volumeSize }}
-
 
 ---
 
@@ -131,6 +104,8 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /opt/data
+        - name: seed-config
+          mountPath: /opt/seed/config
         resources:
           limits:
             cpu: 500m
@@ -150,10 +125,15 @@ spec:
             apt install -y jq
             myceld init node --home /opt/data/mycel
 
-            curl mycel-seed:3000/genesis.json > /opt/data/mycel/config/genesis.json
+            mv /opt/seed/config/* /opt/data/mycel/config
 
-            SEED_NODE_ID=$(curl http://mycel-seed:26657/status | jq -r '.result.node_info.id')
-            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@mycel-seed:26656\"/g" /opt/data/mycel/config/config.toml
+            SEED_NODE=$(cat genesis.json | jq -r '.app_state.genutil.gen_txs[0].body.memo')
+            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE}\"/g" /opt/data/mycel/config/config.toml
+
+      volumes:
+        - name: seed-config
+          configMap:
+            name: seed-config
 
   volumeClaimTemplates:
   - metadata:

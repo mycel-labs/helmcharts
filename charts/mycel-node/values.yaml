@@ -1,14 +1,13 @@
 
-ignite:
-  version: "v0.27.1"
-
 common:
   image: ghcr.io/mycel-domain/mycel:main
   binaryName: myceld
+  genesis: '{}'
 
 seed:
-  repositoryURL: https://github.com/mycel-domain/mycel.git
   volumeSize: 256Gi
+  node_key: '{}'
+  priv_key: '{}'
 
 node:
   volumeSize: 256Gi
