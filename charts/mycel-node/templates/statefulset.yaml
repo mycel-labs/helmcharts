@@ -34,6 +34,7 @@ spec:
           - -c
           - |
             if [ ! -d /opt/data/mycel ]; then
+              mkdir -p /opt/data/mycel
               cp /opt/seed/config/* /opt/data/mycel/config
               cp /opt/seed/data/* /opt/data/mycel/data
             fi
@@ -44,7 +45,7 @@ spec:
             name: seed-config
         - name: seed-data
           configMap:
-            name: seed-config
+            name: seed-data
 
   volumeClaimTemplates:
   - metadata:
