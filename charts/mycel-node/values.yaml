@@ -3,6 +3,7 @@ common:
   image: ghcr.io/mycel-domain/mycel:main
   binaryName: myceld
   genesis: '{}'
+  snapshotInterval: 20
 
 seed:
   volumeSize: 256Gi

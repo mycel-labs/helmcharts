@@ -34,12 +34,20 @@ spec:
           - -c
           - |
             if [ ! -d /opt/data/mycel ]; then
-              mkdir -p /opt/data/mycel/config
-              mkdir -p /opt/data/mycel/data
+              {{ .Values.common.binaryName }} init --home /opt/data/mycel
               cp /opt/seed/config/* /opt/data/mycel/config
               cp /opt/seed/data/* /opt/data/mycel/data
+              sed -i "s%laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://0.0.0.0:26657\"%g" /opt/data/mycel/config/config.toml
+              sed -i "s/snapshot-interval = 0/snapshot-interval = $SNAPSHOT_INTERVAL/g" $HOME/.mycel/config/app.toml
+              sed -i "s/snapshot-keep-recent = 0/snapshot-keep-recent = $SNAPSHOT_KEEP_RECENT/g" $HOME/.mycel/config/app.toml
             fi
             {{ .Values.common.binaryName }} start --home /opt/data/mycel
+        env:
+          - name: SNAPSHOT_INTERVAL
+            value: {{ .Values.common.snapshotInterval | quote }}
+          - name: SNAPSHOT_KEEP_RECENT
+            value: {{ .Values.common.snapshotKeepRecent | quote }}
+
       volumes:
         - name: seed-config
           configMap:
@@ -129,9 +137,26 @@ spec:
 
             cat /opt/seed/config/genesis.json > /opt/data/mycel/config/genesis.json
 
-            SEED_ADDR=$(getent hosts mycel-seed | awk '{ print $1 }')
-            SEED_NODE_ID=$(curl http://mycel-seed:26657/status | jq -r '.result.node_info.id')
-            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@${SEED_ADDR}:26656\"/g" /opt/data/mycel/config/config.toml
+            SEED_RPC=mycel-seed:26657
+            SEED_NODE_ID=$(curl $SEED_RPC/status | jq -r '.result.node_info.id')
+
+            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@$mycel-seed:26656\"/g" /opt/data/mycel/config/config.toml
+            sed -i "s%laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://0.0.0.0:26657\"%g" /opt/data/mycel/config/config.toml
+
+            LATEST_HEIGHT=$(curl -s $SEED_RPC/block | jq -r .result.block.header.height)
+            BLOCK_HEIGHT=$((LATEST_HEIGHT - SNAPSHOT_INTERVAL))
+            TRUST_HASH=$(curl -s "$SEED_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+            echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
+
+            sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
+            s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
+            s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
+            s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"| ; \
+            s|^(seeds[[:space:]]+=[[:space:]]+).*$|\1\"\"|"  /root/.mycel/config/config.toml
+
+        env:
+          - name: SNAPSHOT_INTERVAL
+            value: {{ .Values.common.snapshotInterval | quote }}
 
       volumes:
         - name: seed-config
