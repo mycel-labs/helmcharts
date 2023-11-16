@@ -33,14 +33,15 @@ spec:
           - sh
           - -c
           - |
-            if [ ! -d /opt/data/mycel ]; then
-              {{ .Values.common.binaryName }} init --home /opt/data/mycel
+            if [ ! -f /opt/data/mycel/setup_completed ]; then
+              {{ .Values.common.binaryName }} init seed --home /opt/data/mycel
               cp /opt/seed/config/* /opt/data/mycel/config
               cp /opt/seed/data/* /opt/data/mycel/data
               sed -i "s%laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://0.0.0.0:26657\"%g" /opt/data/mycel/config/config.toml
-              sed -i "s/snapshot-interval = 0/snapshot-interval = $SNAPSHOT_INTERVAL/g" $HOME/.mycel/config/app.toml
-              sed -i "s/snapshot-keep-recent = 0/snapshot-keep-recent = $SNAPSHOT_KEEP_RECENT/g" $HOME/.mycel/config/app.toml
+              sed -i "s/snapshot-interval = 0/snapshot-interval = $SNAPSHOT_INTERVAL/g" /opt/data/mycel/config/app.toml
+              sed -i "s/snapshot-keep-recent = 0/snapshot-keep-recent = $SNAPSHOT_KEEP_RECENT/g" /opt/data/mycel/config/app.toml
             fi
+            touch /opt/data/mycel/setup_completed
             {{ .Values.common.binaryName }} start --home /opt/data/mycel
         env:
           - name: SNAPSHOT_INTERVAL
@@ -129,7 +130,7 @@ spec:
           - bash
           - -cx
           - |
-            if [ -d /opt/data/mycel ]; then
+            if [ -f /opt/data/mycel/setup_completed ]; then
               exit 0;
             fi
             apt install -y jq
@@ -140,7 +141,7 @@ spec:
             SEED_RPC=mycel-seed:26657
             SEED_NODE_ID=$(curl $SEED_RPC/status | jq -r '.result.node_info.id')
 
-            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@$mycel-seed:26656\"/g" /opt/data/mycel/config/config.toml
+            sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@mycel-seed:26656\"/g" /opt/data/mycel/config/config.toml
             sed -i "s%laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://0.0.0.0:26657\"%g" /opt/data/mycel/config/config.toml
 
             LATEST_HEIGHT=$(curl -s $SEED_RPC/block | jq -r .result.block.header.height)
@@ -153,6 +154,8 @@ spec:
             s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
             s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"| ; \
             s|^(seeds[[:space:]]+=[[:space:]]+).*$|\1\"\"|"  /root/.mycel/config/config.toml
+
+            touch /opt/data/mycel/setup_completed
 
         env:
           - name: SNAPSHOT_INTERVAL

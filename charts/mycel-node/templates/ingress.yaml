@@ -1,3 +1,4 @@
+{{ if .Values.ingress }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -32,4 +33,4 @@ spec:
         - {{ .Values.ingress.lcd_endpoint }}
         - {{ .Values.ingress.rpc_endpoint }}
       secretName: mycel-node-ingress-cert
-
+{{ end }}

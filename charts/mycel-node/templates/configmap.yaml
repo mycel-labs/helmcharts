@@ -3,9 +3,9 @@ kind: ConfigMap
 metadata:
   name: seed-config
 data:
-  genesis.json: {{ .Values.common.genesis | quote }}
-  node_key.json: {{ .Values.seed.node_key | quote }}
-  priv_validator_key.json: {{ .Values.seed.priv_key | quote }}
+  genesis.json: {{ .Values.common.genesis }}
+  node_key.json: {{ .Values.seed.node_key }}
+  priv_validator_key.json: {{ .Values.seed.priv_key }}
 
 ---
 apiVersion: v1
