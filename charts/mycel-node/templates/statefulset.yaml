@@ -134,7 +134,8 @@ spec:
               exit 0;
             fi
             apt install -y jq
-            myceld init node --home /opt/data/mycel
+            myceld init node --home /opt/data/mycel --overwrite
+            myceld tendermint unsafe-reset-all
 
             cat /opt/seed/config/genesis.json > /opt/data/mycel/config/genesis.json
 
@@ -150,7 +151,7 @@ spec:
             echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
 
             sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
-            s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
+            s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SEED_RPC,$SEED_RPC\"| ; \
             s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
             s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"| ; \
             s|^(seeds[[:space:]]+=[[:space:]]+).*$|\1\"\"|"  /opt/data/mycel/config/config.toml
