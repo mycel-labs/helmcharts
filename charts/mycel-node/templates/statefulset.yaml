@@ -31,7 +31,7 @@ spec:
             name: rpc
         command:
           - sh
-          - -c
+          - -ce
           - |
             if [ ! -f /opt/data/mycel/setup_completed ]; then
               {{ .Values.common.binaryName }} init seed --home /opt/data/mycel
@@ -128,7 +128,7 @@ spec:
             memory: 2Gi
         command:
           - bash
-          - -cx
+          - -cex
           - |
             if [ -f /opt/data/mycel/setup_completed ]; then
               exit 0;
@@ -153,7 +153,7 @@ spec:
             s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
             s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
             s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"| ; \
-            s|^(seeds[[:space:]]+=[[:space:]]+).*$|\1\"\"|"  /root/.mycel/config/config.toml
+            s|^(seeds[[:space:]]+=[[:space:]]+).*$|\1\"\"|"  /opt/data/mycel/config/config.toml
 
             touch /opt/data/mycel/setup_completed
 
