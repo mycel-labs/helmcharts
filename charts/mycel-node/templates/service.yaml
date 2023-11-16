@@ -21,7 +21,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  {{- if .Values.ingress.enable }}
   external-dns.alpha.kubernetes.io/hostname: "{{ .Values.ingress.lcd_endpoint }},{{ .Values.ingress.rpc_endpoint }}"
+  {{- end }}
   name: mycel-node
 spec:
   selector:
