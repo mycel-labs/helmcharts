@@ -27,4 +27,4 @@ metadata:
   name: node-config
 data:
   app.toml: |-
-    {{ .Files.Get "app.toml" | indent 4 }}
+    {{ .Files.Get "app.toml" | indent 2 }}
