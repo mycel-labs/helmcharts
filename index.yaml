@@ -3,6 +3,15 @@ entries:
   mycel-node:
   - apiVersion: v2
     appVersion: "0.1"
+    created: "2023-11-21T12:15:50.766820869Z"
+    description: A Helm chart for mycel-node
+    digest: 11dd581bd0517260addc3b64de2bc498f304a4cba4fbc1215b12e49af458fdc1
+    name: mycel-node
+    urls:
+    - https://github.com/mycel-domain/helmcharts/releases/download/mycel-node-0.2.4-beta6/mycel-node-0.2.4-beta6.tgz
+    version: 0.2.4-beta6
+  - apiVersion: v2
+    appVersion: "0.1"
     created: "2023-11-21T12:10:08.250202067Z"
     description: A Helm chart for mycel-node
     digest: 8b5c8edb73df0eff8f1601083c3359946166e6d185656bb7ebcb5913829ef1dc
@@ -253,4 +262,4 @@ entries:
     urls:
     - https://github.com/mycel-domain/helmcharts/releases/download/mycel-node-0.0.2/mycel-node-0.0.2.tgz
     version: 0.0.2
-generated: "2023-11-21T12:10:08.250490994Z"
+generated: "2023-11-21T12:15:50.767162707Z"
