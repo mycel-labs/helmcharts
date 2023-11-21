@@ -26,4 +26,4 @@ kind: ConfigMap
 metadata:
   name: node-config
 data:
-  app.toml: {{ .Files.Get "files/app.toml" | indent 4 }}
+  app.toml: {{ range .Files.Lines "files/app.toml" }}{{ . | indent 4 }}\n{{ end }}
