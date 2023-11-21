@@ -140,7 +140,7 @@ spec:
             myceld tendermint unsafe-reset-all
 
             cat /opt/seed/config/genesis.json > /opt/data/mycel/config/genesis.json
-            cat /opt/node/config/app.toml > /opt/data/mycel/config/app.toml
+            base64 -d /opt/node/config/app.toml > /opt/data/mycel/config/app.toml
 
             SEED_RPC=mycel-seed:26657
             SEED_NODE_ID=$(curl $SEED_RPC/status | jq -r '.result.node_info.id')
