@@ -48,5 +48,5 @@ spec:
   - name: grpc-web
     port: 9091
     protocol: TCP
-  type: LoadBalancer
+  type: ClusterIP
 
