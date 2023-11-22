@@ -167,6 +167,8 @@ spec:
         env:
           - name: SNAPSHOT_INTERVAL
             value: {{ .Values.common.snapshotInterval | quote }}
+          - name: SNAPSHOT_KEEP_RECENT
+            value: {{ .Values.common.snapshotKeepRecent | quote }}
 
       volumes:
         - name: seed-config

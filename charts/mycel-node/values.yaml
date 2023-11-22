@@ -4,6 +4,7 @@ common:
   binaryName: myceld
   genesis: '{}'
   snapshotInterval: 20
+  snapshotKeepRecent: 5
 
 seed:
   volumeSize: 256Gi
