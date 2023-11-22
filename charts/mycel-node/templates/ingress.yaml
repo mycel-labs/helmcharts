@@ -30,23 +30,9 @@ spec:
                   number: 26657
             path: /
             pathType: Prefix
-
-    # p2p
-    - host: {{ .Values.ingress.p2p_endpoint}}
-      http:
-        paths:
-          - backend:
-              service:
-                name: mycel-node
-                port:
-                  number: 26656
-            path: /
-            pathType: Prefix
-
   tls:
     - hosts:
         - {{ .Values.ingress.lcd_endpoint }}
         - {{ .Values.ingress.rpc_endpoint }}
-        - {{ .Values.ingress.p2p_endpoint }}
       secretName: mycel-node-ingress-cert
 {{ end }}

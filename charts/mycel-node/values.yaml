@@ -19,5 +19,5 @@ ingress:
   enable: true
   lcd_endpoint: lcd.example.com
   rpc_endpoint: rpc.example.com
-  p2p_endpoint: p2p.example.com
+  seed_endpoint: seed.example.com
 
