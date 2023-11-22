@@ -148,6 +148,9 @@ spec:
             sed -i "s/persistent_peers = \"\"/persistent_peers = \"${SEED_NODE_ID}@mycel-seed:26656\"/g" /opt/data/mycel/config/config.toml
             sed -i "s%laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://0.0.0.0:26657\"%g" /opt/data/mycel/config/config.toml
 
+            sed -i "s/snapshot-interval = 0/snapshot-interval = $SNAPSHOT_INTERVAL/g" /opt/data/mycel/config/app.toml
+            sed -i "s/snapshot-keep-recent = 0/snapshot-keep-recent = $SNAPSHOT_KEEP_RECENT/g" /opt/data/mycel/config/app.toml
+
             LATEST_HEIGHT=$(curl -s $SEED_RPC/block | jq -r .result.block.header.height)
             BLOCK_HEIGHT=$((LATEST_HEIGHT - SNAPSHOT_INTERVAL))
             TRUST_HASH=$(curl -s "$SEED_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
