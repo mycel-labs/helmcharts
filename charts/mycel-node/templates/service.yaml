@@ -14,7 +14,7 @@ spec:
   - name: rpc
     port: 26657
     protocol: TCP
-  type: ClusterIP
+  type: LoadBalancer
 
 ---
 apiVersion: v1
