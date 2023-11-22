@@ -23,7 +23,7 @@ kind: Service
 metadata:
   {{- if .Values.ingress.enable }}
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: "{{ .Values.ingress.lcd_endpoint }},{{ .Values.ingress.rpc_endpoint }}"
+    external-dns.alpha.kubernetes.io/hostname: "{{ .Values.ingress.lcd_endpoint }},{{ .Values.ingress.rpc_endpoint }},{{ .Values.ingress.p2p_endpoint }}"
   {{- end }}
   name: mycel-node
 spec:
