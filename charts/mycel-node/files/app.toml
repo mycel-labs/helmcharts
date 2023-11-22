@@ -52,7 +52,7 @@ pruning-keep-recent = "0"
 
 [state-sync]
   snapshot-interval = 0
-  snapshot-keep-recent = 2
+  snapshot-keep-recent = 0
 
 [store]
   streamers = []
