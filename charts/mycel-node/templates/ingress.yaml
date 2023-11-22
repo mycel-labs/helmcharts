@@ -32,7 +32,7 @@ spec:
             pathType: Prefix
 
     # p2p
-    - host: {{ .Values.ingress.p2p }}
+    - host: {{ .Values.ingress.p2p_endpoint}}
       http:
         paths:
           - backend:
